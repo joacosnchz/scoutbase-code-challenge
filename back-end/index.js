@@ -29,7 +29,7 @@ const typeDefs = gql`
   	password: String
   }
 
-  type CreateUserResponse {
+  type UserResponse {
   	token: String
   	user: User
   }
@@ -40,7 +40,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-  	createUser(username: String, password: String): CreateUserResponse
+  	createUser(username: String, password: String): UserResponse
+  	login(username: String, password: String): UserResponse
   }
 `;
 
@@ -107,6 +108,24 @@ const resolvers = {
 
   		return {
   			token: uuid(),
+  			user: user
+  		};
+  	},
+  	login: (parent, args) => {
+  		let user = users.find(usr => {
+  			if(usr.username == args.username &&
+  				usr.password == args.password) {
+  				return usr;
+  			}
+  		});
+
+  		let token = "";
+  		if(user) {
+  			token = uuid();
+  		}
+
+  		return {
+  			token: token,
   			user: user
   		};
   	}
