@@ -1,4 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server');
+const express = require('express');
+const { ApolloServer, gql } = require('apollo-server-express');
 const uuid = require('uuid/v1');
 
 const typeDefs = gql`
@@ -140,8 +141,10 @@ const resolvers = {
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
+const app = express();
 
-// The `listen` method launches a web server.
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+server.applyMiddleware({app, path: '/graphql'})
+
+app.listen({port:4000}, () => {
+	console.log('Server ready');
 });
