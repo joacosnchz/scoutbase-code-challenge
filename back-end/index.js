@@ -6,6 +6,7 @@ const typeDefs = gql`
   	title: String
   	year: Int
   	rating: Float
+  	scoutbase_rating: Float
   	actors: [Actor]
   }
 
@@ -93,7 +94,13 @@ const movies = [
 
 const resolvers = {
   Query: {
-    movies: () => movies,
+    movies: () => {
+    	for (var i = movies.length - 1; i >= 0; i--) {
+    		movies[i].scoutbase_rating = parseFloat(10 - Math.floor(Math.random() * 5));
+    	}
+
+    	return movies;
+    },
     users: () => users
   },
   Mutation: {
