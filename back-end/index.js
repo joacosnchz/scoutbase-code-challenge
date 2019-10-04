@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server');
+const uuid = require('uuid/v1');
 
 const typeDefs = gql`
   type Movie {
@@ -21,10 +22,29 @@ const typeDefs = gql`
   	country: String
   }
 
+  type User {
+  	id: Int
+  	name: String
+  	username: String
+  	password: String
+  }
+
+  type CreateUserResponse {
+  	token: String
+  	user: User
+  }
+
   type Query {
-    movies: [Movie]
+    movies: [Movie],
+    users: [User]
+  }
+
+  type Mutation {
+  	createUser(username: String, password: String): CreateUserResponse
   }
 `;
+
+let users = [];
 
 const movies = [
 	{
@@ -72,7 +92,24 @@ const movies = [
 
 const resolvers = {
   Query: {
-    movies: () => movies
+    movies: () => movies,
+    users: () => users
+  },
+  Mutation: {
+  	createUser: (parent, args) => {
+  		let user = {
+  			id: (users.length+1),
+  			name: args.username,
+  			username: args.username,
+  			password: args.password,
+  		};
+  		users.push(user);
+
+  		return {
+  			token: uuid(),
+  			user: user
+  		};
+  	}
   }
 };
 
